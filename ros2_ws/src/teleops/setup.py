@@ -22,7 +22,7 @@ setup(
     license='MIT',
     entry_points={
         'console_scripts': [
-            'motor_controller_node = teleops.motor_controller_node:main',
+            'avr_interface_node = teleops.avr_interface_node:main',
         ],
     },
 )

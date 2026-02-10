@@ -14,8 +14,8 @@ def generate_launch_description():
     return LaunchDescription([
         Node(
             package='teleops',
-            executable='motor_controller_node',
-            name='motor_controller_node',
+            executable='avr_interface_node',
+            name='avr_interface_node',
             parameters=[config],
             output='screen',
         ),
