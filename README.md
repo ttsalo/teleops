@@ -65,6 +65,38 @@ firmware/                  # AVR firmware (non-ROS)
     motor_controller.ino       # Arduino Nano motor control + telemetry firmware
 ```
 
+## Install prerequisites
+
+### ROS 2 (Raspberry Pi / Ubuntu 24.04)
+
+Install ROS 2 Jazzy following the [official instructions](https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html):
+```bash
+# Add ROS 2 apt repository
+sudo apt install software-properties-common
+sudo add-apt-repository universe
+sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+sudo apt update
+
+# Install ROS 2 base and build tools
+sudo apt install ros-jazzy-ros-base python3-colcon-common-extensions
+```
+
+### Python dependencies
+```bash
+pip install pyserial
+```
+
+### Arduino CLI (for firmware builds)
+```bash
+curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
+sudo mv bin/arduino-cli /usr/local/bin/
+
+# Install Arduino AVR core
+arduino-cli core update-index
+arduino-cli core install arduino:avr
+```
+
 ## Building
 
 ### ROS 2 package
