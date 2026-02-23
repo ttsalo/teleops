@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CycloneDDS xmlns="https://cdds.io/config">
+  <Domain>
+    <General>
+      <!-- Disable multicast; use unicast peer discovery only -->
+      <AllowMulticast>false</AllowMulticast>
+    </General>
+    <Discovery>
+      <Peers>
+        <!-- Replace with the rover Pi's IP address -->
+        <Peer address="ROVER_PI_IP"/>
+      </Peers>
+      <ParticipantIndex>auto</ParticipantIndex>
+    </Discovery>
+  </Domain>
+</CycloneDDS>

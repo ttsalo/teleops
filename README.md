@@ -52,22 +52,29 @@ AVR (Arduino Nano, ATmega328P):
 ## Repository Structure
 
 ```
-ros2_ws/src/teleops/       # ROS 2 package
+ros2_ws/src/teleops/            # Rover Pi ROS 2 package
   teleops/
-    avr_interface_node.py      # Bidirectional serial: cmd_vel + telemetry
+    avr_interface_node.py           # Bidirectional serial: cmd_vel + telemetry
   launch/
     avr_interface.launch.py
   config/
     params.yaml
 
-firmware/                  # AVR firmware (non-ROS)
+ros2_ws/src/teleops_operator/   # Operator laptop ROS 2 package
+  config/
+    joy_params.yaml                 # Joystick axis/button mapping
+    cyclonedds.xml                  # Unicast peer discovery config
+  launch/
+    operator.launch.py              # Launches joy_node + teleop_twist_joy_node
+
+firmware/                       # AVR firmware (non-ROS)
   motor_controller/
-    motor_controller.ino       # Arduino Nano motor control + telemetry firmware
+    motor_controller.ino            # Arduino Nano motor control + telemetry firmware
 ```
 
 ## Install prerequisites
 
-### ROS 2 (Raspberry Pi / Ubuntu 24.04)
+### ROS 2 (both sides, Ubuntu 24.04)
 
 Install ROS 2 Jazzy following the [official instructions](https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html):
 ```bash
@@ -82,9 +89,14 @@ sudo apt update
 sudo apt install ros-jazzy-ros-base python3-colcon-common-extensions
 ```
 
-### Python dependencies
+### Rover Pi additional dependencies
 ```bash
 pip install pyserial
+```
+
+### Operator laptop additional dependencies
+```bash
+sudo apt install ros-jazzy-joy ros-jazzy-teleop-twist-joy ros-jazzy-rmw-cyclonedds-cpp
 ```
 
 ### Arduino CLI (for firmware builds)
@@ -99,7 +111,7 @@ arduino-cli core install arduino:avr
 
 ## Building
 
-### ROS 2 package
+### Rover Pi — ROS 2 package
 ```bash
 cd ros2_ws
 colcon build --packages-select teleops
@@ -107,8 +119,44 @@ source install/setup.bash
 ros2 launch teleops avr_interface.launch.py
 ```
 
+### Operator laptop — ROS 2 package
+```bash
+cd ros2_ws
+colcon build --packages-select teleops_operator
+source install/setup.bash
+ros2 launch teleops_operator operator.launch.py
+```
+
 ### AVR firmware
 ```bash
 arduino-cli compile --fqbn arduino:avr:nano firmware/motor_controller
 arduino-cli upload --fqbn arduino:avr:nano -p /dev/ttyUSB0 firmware/motor_controller
 ```
+
+## Networking with CycloneDDS
+
+By default ROS 2 uses multicast for node discovery, which doesn't work over
+point-to-point IP tunnels (mobile data, VPN, etc.). CycloneDDS with unicast
+peer discovery solves this.
+
+### Setup (both sides)
+
+1. Install CycloneDDS RMW (if not already):
+   ```bash
+   sudo apt install ros-jazzy-rmw-cyclonedds-cpp
+   ```
+
+2. Edit `ros2_ws/src/teleops_operator/config/cyclonedds.xml` — replace
+   `ROVER_PI_IP` with the rover Pi's IP address.
+
+3. On the rover Pi, create a similar `cyclonedds.xml` with the operator
+   laptop's IP as the peer address.
+
+4. Set environment variables before launching nodes (add to your shell rc):
+   ```bash
+   export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+   export CYCLONEDDS_URI=file:///path/to/cyclonedds.xml
+   ```
+
+Both sides need `RMW_IMPLEMENTATION` and `CYCLONEDDS_URI` set. The IP tunnel
+itself (WireGuard, SSH tunnel, etc.) is set up separately by the user.
