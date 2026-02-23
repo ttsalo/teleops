@@ -28,6 +28,7 @@ AVR (Arduino Nano, ATmega328P):
 - **Arduino Nano** — motor control firmware, 115200 baud serial
 - **2x L298N** dual H-bridge motor drivers — one per side (left/right)
 - **6 DC motors** — 3 per side, wired in parallel per L298N driver
+ - Model JGA25-370, 30 RPM, 6V, no-load 0.2 A, load 0.5 A
 - Pin assignments:
   - Left motor: ENA (PWM) = D9, IN1 = D8, IN2 = D7
   - Right motor: ENB (PWM) = D10, IN3 = D12, IN4 = D11
