@@ -23,6 +23,7 @@ setup(
     entry_points={
         'console_scripts': [
             'avr_interface_node = teleops.avr_interface_node:main',
+            'camera_node = teleops.camera_node:main',
         ],
     },
 )

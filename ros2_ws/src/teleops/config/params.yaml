@@ -6,3 +6,12 @@ avr_interface_node:
     max_speed: 1.0
     timeout: 0.5
     telemetry_timeout: 2.0
+
+camera_node:
+  ros__parameters:
+    receiver_host: "192.168.1.100"
+    receiver_port: 5600
+    width: 1280
+    height: 720
+    framerate: 30
+    bitrate: 2000

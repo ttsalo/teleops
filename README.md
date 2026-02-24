@@ -11,8 +11,7 @@ Operator Laptop:
 
 Rover Pi (ROS 2 nodes):
 - avr_interface_node (bidirectional serial with AVR: cmd_vel → motor commands, telemetry → ROS topics) ✓
-- camera_node (publishes /image)
-- video_bridge_node (streams video to operator)
+- camera_node (GStreamer H.264 stream via UDP to operator) ✓
 
 AVR (Arduino Nano, ATmega328P):
 - Not running ROS (bidirectional serial with Pi)
@@ -56,8 +55,10 @@ AVR (Arduino Nano, ATmega328P):
 ros2_ws/src/teleops/            # Rover Pi ROS 2 package
   teleops/
     avr_interface_node.py           # Bidirectional serial: cmd_vel + telemetry
+    camera_node.py                  # GStreamer H.264 UDP streaming
   launch/
     avr_interface.launch.py
+    camera.launch.py
   config/
     params.yaml
 
@@ -93,6 +94,15 @@ sudo apt install ros-jazzy-ros-base python3-colcon-common-extensions
 ### Rover Pi additional dependencies
 ```bash
 pip install pyserial
+sudo apt install python3-gi gstreamer1.0-tools gstreamer1.0-plugins-base \
+  gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly \
+  gstreamer1.0-libav libcamera-dev gstreamer1.0-libcamera
+```
+
+### Operator laptop GStreamer (for receiving video)
+```bash
+sudo apt install gstreamer1.0-tools gstreamer1.0-plugins-base \
+  gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-libav
 ```
 
 ### Operator laptop additional dependencies
@@ -118,6 +128,9 @@ cd ros2_ws
 colcon build --packages-select teleops
 source install/setup.bash
 ros2 launch teleops avr_interface.launch.py
+
+# In a separate terminal — camera streaming:
+ros2 launch teleops camera.launch.py
 ```
 
 ### Operator laptop — ROS 2 package
@@ -126,6 +139,11 @@ cd ros2_ws
 colcon build --packages-select teleops_operator
 source install/setup.bash
 ros2 launch teleops_operator operator.launch.py
+
+# In a separate terminal — receive camera stream:
+gst-launch-1.0 udpsrc port=5600 \
+  caps='application/x-rtp,media=video,clock-rate=90000,encoding-name=H264,payload=96' \
+  ! rtph264depay ! h264parse ! avdec_h264 ! videoconvert ! autovideosink sync=false
 ```
 
 ### AVR firmware
