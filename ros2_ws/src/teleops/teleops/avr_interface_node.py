@@ -153,7 +153,7 @@ class AvrInterfaceNode(Node):
             except serial.SerialException as e:
                 self.get_logger().error(f'Serial write failed: {e}')
         else:
-            self.get_logger().debug(f'Serial command: {command.strip()}')
+            self.get_logger().info(f'Serial command: {command.strip()}')
 
     def destroy_node(self):
         self._reader_running = False
