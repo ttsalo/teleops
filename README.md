@@ -124,6 +124,7 @@ arduino-cli core install arduino:avr
 
 ### Rover Pi — ROS 2 package
 ```bash
+source /opt/ros/jazzy/setup.bash
 cd ros2_ws
 colcon build --packages-select teleops
 source install/setup.bash
@@ -135,6 +136,7 @@ ros2 launch teleops camera.launch.py
 
 ### Operator laptop — ROS 2 package
 ```bash
+source /opt/ros/jazzy/setup.bash
 cd ros2_ws
 colcon build --packages-select teleops_operator
 source install/setup.bash
