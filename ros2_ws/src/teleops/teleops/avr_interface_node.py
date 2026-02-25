@@ -13,15 +13,11 @@ class AvrInterfaceNode(Node):
 
         self.declare_parameter('serial_port', '/dev/ttyUSB0')
         self.declare_parameter('baud_rate', 115200)
-        self.declare_parameter('wheel_base', 0.3)
-        self.declare_parameter('max_speed', 1.0)
         self.declare_parameter('timeout', 0.5)
         self.declare_parameter('telemetry_timeout', 2.0)
 
         self.serial_port = self.get_parameter('serial_port').value
         self.baud_rate = self.get_parameter('baud_rate').value
-        self.wheel_base = self.get_parameter('wheel_base').value
-        self.max_speed = self.get_parameter('max_speed').value
         self.timeout = self.get_parameter('timeout').value
         self.telemetry_timeout = self.get_parameter('telemetry_timeout').value
 
@@ -49,8 +45,7 @@ class AvrInterfaceNode(Node):
 
         self.get_logger().info(
             f'AVR interface started: port={self.serial_port}, '
-            f'baud={self.baud_rate}, wheel_base={self.wheel_base}, '
-            f'max_speed={self.max_speed}'
+            f'baud={self.baud_rate}'
         )
 
     def _open_serial(self):
@@ -131,11 +126,11 @@ class AvrInterfaceNode(Node):
         linear = msg.linear.x
         angular = msg.angular.z
 
-        left_vel = linear - (angular * self.wheel_base / 2.0)
-        right_vel = linear + (angular * self.wheel_base / 2.0)
+        left_vel = linear - angular
+        right_vel = linear + angular
 
-        left_pwm = int(max(-255, min(255, (left_vel / self.max_speed) * 255)))
-        right_pwm = int(max(-255, min(255, (right_vel / self.max_speed) * 255)))
+        left_pwm = int(max(-255, min(255, left_vel * 255)))
+        right_pwm = int(max(-255, min(255, right_vel * 255)))
 
         self._send_motor_command(left_pwm, right_pwm)
 
