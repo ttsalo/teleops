@@ -27,7 +27,10 @@ AVR (Arduino Nano, ATmega328P):
 - **Arduino Nano** — motor control firmware, 115200 baud serial
 - **1x L298N** dual H-bridge motor driver — channel A for left, channel B for right
 - **6 DC motors** — 3 per side, wired in parallel per channel
- - Model JGA25-370, 30 RPM, 6V, no-load 0.2 A, load 0.5 A
+ - Model JGA25-370, 30 RPM, 6V, 4 kg·cm torque, no-load 0.2 A, load 0.5 A
+- **Performance** (wheel diameter 130 mm):
+  - Top speed: 0.20 m/s (30 RPM × π × 0.13 m / 60)
+  - Drive force: 36.2 N (6 motors × 4 kg·cm / 6.5 cm radius × 9.81 m/s²)
 - Pin assignments:
   - Left motor: ENA (PWM) = D9, IN1 = D8, IN2 = D7
   - Right motor: ENB (PWM) = D10, IN3 = D12, IN4 = D11
