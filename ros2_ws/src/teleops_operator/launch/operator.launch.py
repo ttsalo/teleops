@@ -20,5 +20,11 @@ def generate_launch_description():
             executable='teleop_node',
             name='teleop_twist_joy_node',
             parameters=[params_file],
+            remappings=[('cmd_vel', 'cmd_vel_raw')],
+        ),
+        Node(
+            package='teleops_operator',
+            executable='cmd_vel_scaler',
+            name='cmd_vel_scaler',
         ),
     ])

@@ -21,6 +21,8 @@ setup(
     description='Operator laptop joystick driver and launch for teleoperated rover',
     license='MIT',
     entry_points={
-        'console_scripts': [],
+        'console_scripts': [
+            'cmd_vel_scaler = teleops_operator.cmd_vel_scaler:main',
+        ],
     },
 )
