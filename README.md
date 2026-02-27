@@ -5,7 +5,9 @@ Onboard software and operator side software for a teleoperated rover.
 ## Architecture
 
 Operator Laptop:
-- teleop_twist_joy (joystick → cmd_vel)
+- joy_node (reads joystick hardware → /joy)
+- teleop_twist_joy (joy → cmd_vel_raw)
+- cmd_vel_scaler (scales cmd_vel_raw by twist axis → cmd_vel)
 - rviz2 (visualization)
 - rqt (debugging tools)
 
@@ -48,7 +50,8 @@ AVR (Arduino Nano, ATmega328P):
 
 | Topic | Type | Description |
 |-------|------|-------------|
-| `/cmd_vel` | `geometry_msgs/Twist` | Motor velocity commands (subscribed) |
+| `/cmd_vel_raw` | `geometry_msgs/Twist` | Unscaled velocity from teleop_twist_joy |
+| `/cmd_vel` | `geometry_msgs/Twist` | Speed-scaled velocity commands to rover |
 | `/battery_voltage` | `std_msgs/Float32` | Battery voltage in volts |
 | `/encoder_ticks` | `std_msgs/Int32MultiArray` | Cumulative encoder ticks [left, right] |
 
@@ -69,8 +72,10 @@ ros2_ws/src/teleops_operator/   # Operator laptop ROS 2 package
   config/
     joy_params.yaml                 # Joystick axis/button mapping
     cyclonedds.xml                  # Unicast peer discovery config
+  teleops_operator/
+    cmd_vel_scaler.py               # Scales cmd_vel by joystick twist axis
   launch/
-    operator.launch.py              # Launches joy_node + teleop_twist_joy_node
+    operator.launch.py              # Launches joy_node, teleop_twist_joy, cmd_vel_scaler
 
 firmware/                       # AVR firmware (non-ROS)
   motor_controller/
