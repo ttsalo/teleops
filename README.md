@@ -161,6 +161,14 @@ ros2 launch teleops avr_interface.launch.py
 ros2 launch teleops camera.launch.py
 ```
 
+Before launching the camera node, set the operator laptop's IP in
+`ros2_ws/src/teleops/config/params.yaml`:
+```yaml
+camera_node:
+  ros__parameters:
+    receiver_host: "192.168.x.x"  # operator laptop IP
+```
+
 ### Operator laptop — ROS 2 package
 ```bash
 source /opt/ros/jazzy/setup.bash  # apt-installed packages (joy, teleop_twist_joy)
