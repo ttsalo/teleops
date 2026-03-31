@@ -28,7 +28,7 @@ class CameraNode(Node):
 
         pipeline_str = (
             f'libcamerasrc ! '
-            f'video/x-raw,width={width},height={height},'
+            f'video/x-raw,format=NV12,width={width},height={height},'
             f'framerate={framerate}/1 ! '
             f'videoconvert ! '
             f'x264enc tune=zerolatency bitrate={bitrate} '
