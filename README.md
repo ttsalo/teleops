@@ -102,10 +102,29 @@ sudo apt install ros-jazzy-ros-base python3-colcon-common-extensions
 ### Rover Pi additional dependencies
 ```bash
 pip install pyserial
-sudo apt install python3-gi gstreamer1.0-tools gstreamer1.0-plugins-base \
+sudo apt install python3-gi python3-gi-cairo \
+  gir1.2-gstreamer-1.0 gir1.2-gst-plugins-base-1.0 \
+  gstreamer1.0-tools gstreamer1.0-plugins-base \
   gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly \
   gstreamer1.0-libav libcamera-dev gstreamer1.0-libcamera
 ```
+
+#### Raspberry Pi 5: libcamera IPA
+
+Ubuntu's `libcamera-ipa` only includes the Pi 4 (VC4) IPA. Pi 5 needs the PiSP IPA
+(`ipa_rpi_pisp.so`) from the Raspberry Pi Foundation's archive:
+
+```bash
+curl -fsSL https://archive.raspberrypi.com/debian/raspberrypi.gpg.key \
+  | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/raspberrypi.gpg
+echo "deb http://archive.raspberrypi.com/debian/ bookworm main" \
+  | sudo tee /etc/apt/sources.list.d/raspi.list
+sudo apt update && sudo apt install libcamera-ipa libcamera0.2
+```
+
+> Note: this mixes a Debian bookworm repo into Ubuntu. Only `libcamera-ipa`
+> and `libcamera0.2` are needed from it; `libcamera-tools` has an Ubuntu-incompatible
+> dependency (`libjpeg62-turbo`) and should not be installed from this repo.
 
 ### Operator laptop GStreamer (for receiving video)
 ```bash
