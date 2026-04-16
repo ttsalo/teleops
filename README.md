@@ -34,6 +34,9 @@ AVR (Arduino Nano, ATmega328P):
 - **Performance** (wheel diameter 130 mm):
   - Top speed: 0.20 m/s (30 RPM × π × 0.13 m / 60)
   - Drive force: 36.2 N (6 motors × 4 kg·cm / 6.5 cm radius × 9.81 m/s²)
+- **Battery**: 12× Panasonic NCR18650B, 3P4S configuration
+  - 14.4 V nominal, 16.8 V fully charged, 10.0 V cutoff
+  - 10,200 mAh (10.2 Ah), ~147 Wh
 - Pin assignments:
   - Left motor: ENA (PWM) = D9, IN1 = D8, IN2 = D7
   - Right motor: ENB (PWM) = D10, IN3 = D12, IN4 = D11
