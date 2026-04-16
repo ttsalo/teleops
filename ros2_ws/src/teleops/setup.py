@@ -14,7 +14,7 @@ setup(
         (os.path.join('share', package_name, 'config'), glob('config/*.yaml')),
         (os.path.join('share', package_name, 'launch'), glob('launch/*.launch.py')),
     ],
-    install_requires=['setuptools', 'pyserial'],
+    install_requires=['setuptools', 'pyserial', 'prometheus_client'],
     zip_safe=True,
     maintainer='ttsalo',
     maintainer_email='todo@todo.com',
@@ -24,6 +24,7 @@ setup(
         'console_scripts': [
             'avr_interface_node = teleops.avr_interface_node:main',
             'camera_node = teleops.camera_node:main',
+            'metrics_node = teleops.metrics_node:main',
         ],
     },
 )

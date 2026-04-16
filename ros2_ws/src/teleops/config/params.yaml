@@ -15,3 +15,8 @@ camera_node:
     height: 960
     framerate: 30
     bitrate: 2000
+
+metrics_node:
+  ros__parameters:
+    metrics_port: 9101
+    telemetry_timeout: 2.0

@@ -14,6 +14,7 @@ Operator Laptop:
 Rover Pi (ROS 2 nodes):
 - avr_interface_node (bidirectional serial with AVR: cmd_vel → motor commands, telemetry → ROS topics) ✓
 - camera_node (GStreamer H.264 stream via UDP to operator) ✓
+- metrics_node (Prometheus exporter: battery, encoders, cmd_vel → HTTP /metrics) ✓
 
 AVR (Arduino Nano, ATmega328P):
 - Not running ROS (bidirectional serial with Pi)
@@ -55,6 +56,26 @@ AVR (Arduino Nano, ATmega328P):
 | `/battery_voltage` | `std_msgs/Float32` | Battery voltage in volts |
 | `/encoder_ticks` | `std_msgs/Int32MultiArray` | Cumulative encoder ticks [left, right] |
 
+## Prometheus Metrics
+
+`metrics_node` exposes a Prometheus-compatible `/metrics` endpoint on port 9101 (configurable via `params.yaml`).
+
+| Metric | Type | Description |
+|--------|------|-------------|
+| `teleops_battery_voltage_volts` | Gauge | Battery voltage in volts |
+| `teleops_encoder_ticks_total{side}` | Counter | Cumulative encoder ticks, `side` ∈ {left, right} |
+| `teleops_cmd_vel_linear_mps` | Gauge | Current `cmd_vel` linear velocity (m/s) |
+| `teleops_cmd_vel_angular_radps` | Gauge | Current `cmd_vel` angular velocity (rad/s) |
+| `teleops_telemetry_age_seconds` | Gauge | Seconds since last AVR telemetry received |
+| `teleops_avr_ready` | Gauge | 1 if AVR telemetry is current, 0 if stale |
+
+Add to your Prometheus `scrape_configs`:
+```yaml
+- job_name: teleops_rover
+  static_configs:
+    - targets: ['<pi-ip>:9101']
+```
+
 ## Repository Structure
 
 ```
@@ -62,9 +83,11 @@ ros2_ws/src/teleops/            # Rover Pi ROS 2 package
   teleops/
     avr_interface_node.py           # Bidirectional serial: cmd_vel + telemetry
     camera_node.py                  # GStreamer H.264 UDP streaming
+    metrics_node.py                 # Prometheus metrics exporter
   launch/
     avr_interface.launch.py
     camera.launch.py
+    metrics.launch.py
   config/
     params.yaml
 
@@ -102,6 +125,7 @@ sudo apt install ros-jazzy-ros-base python3-colcon-common-extensions
 ### Rover Pi additional dependencies
 ```bash
 pip install pyserial
+sudo apt install python3-prometheus-client
 sudo apt install python3-gi python3-gi-cairo \
   gir1.2-gstreamer-1.0 gir1.2-gst-plugins-base-1.0 \
   gstreamer1.0-tools gstreamer1.0-plugins-base \
@@ -159,6 +183,9 @@ ros2 launch teleops avr_interface.launch.py
 
 # In a separate terminal — camera streaming:
 ros2 launch teleops camera.launch.py
+
+# In a separate terminal — Prometheus metrics on :9101/metrics:
+ros2 launch teleops metrics.launch.py
 ```
 
 Before launching the camera node, set the operator laptop's IP in
