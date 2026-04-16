@@ -1,0 +1,15 @@
+[Unit]
+Description=Teleops Camera (H.264 UDP stream)
+After=network.target
+
+[Service]
+Type=simple
+User=ttsalo
+ExecStart=/usr/local/bin/teleops-camera.sh
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

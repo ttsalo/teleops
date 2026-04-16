@@ -220,6 +220,50 @@ arduino-cli compile --fqbn arduino:avr:nano firmware/motor_controller
 arduino-cli upload --fqbn arduino:avr:nano -p /dev/ttyUSB0 firmware/motor_controller
 ```
 
+## Deployment
+
+One-time setup steps for the rover Pi and operator laptop. Run these after
+cloning the repo.
+
+### Rover Pi
+
+**SSH server keepalives** — prevents connections from hanging on mobile/tunnel links:
+```bash
+make deploy-ssh-server
+```
+Installs `config/ssh/sshd.conf` to `/etc/ssh/sshd_config.d/teleops.conf` and
+reloads sshd.
+
+**Systemd services** — runs avr_interface, camera, and metrics as system
+services that start on boot and restart on failure, independent of SSH sessions:
+```bash
+make deploy-systemd
+sudo systemctl start teleops-avr teleops-camera teleops-metrics
+```
+
+To stop and remove:
+```bash
+make undeploy-systemd
+```
+
+Check service status:
+```bash
+systemctl status teleops-avr teleops-camera teleops-metrics
+journalctl -u teleops-avr -f   # live log
+```
+
+> **Note:** `deploy-systemd` installs the last-built binaries. Run
+> `colcon build --packages-select teleops` before deploying after any code change.
+
+### Operator laptop
+
+**SSH client keepalives** — add to `~/.ssh/config`:
+```bash
+make deploy-ssh-client
+```
+Prints the `config/ssh/client.conf` snippet to paste. Replace `<ROVER_IP>` with
+the rover's actual IP (WireGuard, tunnel, etc.).
+
 ## Networking with CycloneDDS
 
 By default ROS 2 uses multicast for node discovery, which doesn't work over
