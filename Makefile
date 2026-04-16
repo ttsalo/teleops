@@ -1,5 +1,5 @@
 SHELL := /bin/bash
-.PHONY: rover operator
+.PHONY: rover camera metrics operator
 
 rover:
 	source /opt/ros/jazzy/setup.bash && \
@@ -7,6 +7,18 @@ rover:
 	colcon build --packages-select teleops && \
 	source install/setup.bash && \
 	ros2 launch teleops avr_interface.launch.py
+
+camera:
+	source /opt/ros/jazzy/setup.bash && \
+	cd ros2_ws && \
+	source install/setup.bash && \
+	ros2 launch teleops camera.launch.py
+
+metrics:
+	source /opt/ros/jazzy/setup.bash && \
+	cd ros2_ws && \
+	source install/setup.bash && \
+	ros2 launch teleops metrics.launch.py
 
 operator:
 	source /opt/ros/jazzy/setup.bash && \
